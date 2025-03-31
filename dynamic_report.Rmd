@@ -1,0 +1,87 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Doodle+Shadow&display=swap');
+
+body {
+    background-color: black;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
+    line-height: 1.6;
+}
+
+h1 {
+    font-family: 'Rubik Doodle Shadow', sans-serif;
+    color: red;
+    letter-spacing: 2px;
+}
+
+h2 {
+    color: green;
+    font-size: 24px;
+}
+```
+
+## Daily Gaming Analysis
+I gathered daily gaming behaviors from about 20 people, extracting data points such as: How many hours do you spend gaming every day? What do you think the length of time you spend playing is related to? Which genre do you play the most? What platform do you game on? The study focused on quantifying and qualifying various aspects of their daily gaming routines through data.
+
+```{r}
+library(tidyverse)
+
+# Read data directly from the URL
+logged_data <- read.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRS0E1iAwBvjsIrzjcDumrSjZheHa6cCLiPrLW7R2erUSHlkttGjIys7tRCuU1NU5duGS4gkitjIllr/pub?gid=1571160482&single=true&output=csv")
+logged_data
+
+# Use the rename() function, create a new data frame named latest_data
+latest_data <- logged_data %>% 
+  rename(time = 1,
+         time_hours = 2,
+         time_related = 3,
+         game_genre = 4,
+         game_platform = 5)
+
+names(latest_data)
+glimpse(latest_data)
+
+# Calculate how many answers in total:
+total_answer_time_hours <- length(na.omit(latest_data$time_hours))
+total_answer_time_hours
+
+# Since we know the time_hours is numeric, I can use r function to explore the data
+min_time_hours <- min(latest_data$time_hours, na.rm = TRUE)
+max_time_hours <- max(latest_data$time_hours, na.rm = TRUE)
+mean_time_hours <- mean(latest_data$time_hours, na.rm = TRUE)
+min_time_hours
+max_time_hours
+mean_time_hours
+
+# Create the bar char
+# time_hours
+ggplot(data = latest_data)  + 
+  geom_bar(aes(x = time_hours),
+           fill = "orange") +
+  labs(title = "How many hours do you spend gaming every day?",
+       x = "time_hours(per day)",
+       y = "numbers")
+# game_genre
+ggplot(data = latest_data) + 
+  geom_bar(aes(x = game_genre),
+           fill = "red") +
+  labs(title =  "Which genre do you play the most?",
+       x = "game genre",
+       y = "count of numbers")
+
+# One commented section
+paste0("The average daily gaming time of ", total_answer_time_hours, " participants is ", mean_time_hours, " hours")
+paste0("There are ", total_answer_time_hours," people in total answer the question : How many hours do you spend gaming every day?")
+
+```
+
